@@ -5,6 +5,8 @@
 
 
 const TGAColor red = TGAColor(255, 0, 0, 255);
+const TGAColor yellow = TGAColor(0, 255, 0, 255);
+const TGAColor green = TGAColor(0, 255, 255, 255);
 
 void line(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor color)
 {
@@ -16,14 +18,19 @@ void line(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor colo
 
 	if (abs(invX) < abs(invY))
 	{
-		Xinc = invX / invY;
-		Yinc = invY / invY;
+		int step = abs(invY);
 
-		for (int c = invY; c > y1; c++)
+		Xinc = invX / step;
+		Yinc = invY / step;
+		for (int c = 1; c < step; c++)
 		{
-			y0 += Yinc;
-			x0 += Yinc;
-			image.set(round(x0), y0, color);
+			x0 += Xinc;
+			y0 += round(Yinc);
+			int rnd = round(x0);
+			std::cout << x0 << std::endl;
+			std::cout << y0 << std::endl;
+			std::cout << rnd << std::endl;
+			image.set(rnd, y0, color);
 		}
 	}
 	if (abs(invX) >  abs(invY))
@@ -33,7 +40,7 @@ void line(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor colo
 		Xinc = invX / step;
 		Yinc = invY / step;
 
-		for (int c = 1; c <= invX; c++)
+		for (int c = 1; c < step; c++)
 		{
 			x0 += round(Xinc);
 			y0 += Yinc;
@@ -49,7 +56,9 @@ void line(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor colo
 int main()
 {
 	TGAImage image(200, 200, TGAImage::RGB);
-	line(13, 20, 80, 40, image, red);
-	image.write_tga_file("wrcce.tga");
+	line(13, 20, 100, 40, image, red);
+	line(100, 40, 13, 80, image, red);
+	line(13, 80, 13, 20, image, red);
+	image.write_tga_file("tringle27323.tga");
 	return 0;
 }
