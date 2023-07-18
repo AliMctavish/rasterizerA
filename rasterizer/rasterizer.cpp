@@ -2,7 +2,7 @@
 //
 #include "tgaimage.h"
 #include <iostream>
-#include<windows.h>    
+#include <windows.h>    
 
 
 //RANDOM COLORS FOR LINE DRAWING
@@ -14,51 +14,15 @@ const TGAColor green = TGAColor(0, 255, 255, 255);
 //DDA ALGORITHIM IMPLEMENTAION
 void DrawByDDA(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor color)
 {
-	float invX = x1 - x0;
-	float invY = y1 - y0;
-	float Xinc = 0;
-	float Yinc = 0;
-	float m = invX / invY;
-
-	if (abs(invX) < abs(invY))
-	{
-		int step = abs(invY);
-
-		Xinc = invX / step;
-		Yinc = invY / step;
-		for (int c = 1; c < step; c++)
-		{
-			x0 += Xinc;
-			y0 += round(Yinc);
-			int rnd = round(x0);
-			std::cout << x0 << std::endl;
-			std::cout << y0 << std::endl;
-			std::cout << rnd << std::endl;
-			image.set(rnd, y0, color);
-		}
-	}
-	if (abs(invX) >  abs(invY))
-	{
-		int step = abs(invX);
-
-		Xinc = invX / step;
-		Yinc = invY / step;
-
-		for (int c = 1; c < step; c++)
-		{
-			x0 += round(Xinc);
-			y0 += Yinc;
-			int rnd = round(y0);
-			std::cout << x0 << std::endl;
-			std::cout << y0 << std::endl;
-			std::cout << rnd << std::endl;
-			image.set(x0, rnd, color);
-		}
+	for (float t = 0.; t < 1.; t += .01) {
+		int x = x0 * t;
+		int y = y0 * t;
+		image.set(x, y, color);
 	}
 }
 
 //BRENSHAM ALGORITHIM IMPLEMENTAION
-void DrawByBresnham(int x0, int y0 , int x1 , int y1 , TGAImage& image, TGAColor color)
+void DrawByBresnham(int x0, int y0, int x1, int y1, TGAImage& image, TGAColor color)
 {
 	for (int x = x0; x <= x1; x += 1)
 	{
@@ -68,15 +32,39 @@ void DrawByBresnham(int x0, int y0 , int x1 , int y1 , TGAImage& image, TGAColor
 	}
 }
 
+
+void DrawBySlope(int point, int slopex, int slopey, TGAImage& image, TGAColor color)
+{
+	again:
+	for (int i = 0; i <= slopex; i++)
+	{
+		point++;
+		for (int j = 0; j <= slopey; j++)
+		{ 
+			point++;
+			if (point > 100)
+			{
+				break;
+			}
+			if (i == slopex && j == slopey)
+			{
+				point++;
+				image.set(point, point, color);
+			
+				goto again;
+			}
+		}
+	}
+
+}
+
 int main()
 {
 	TGAImage image(200, 200, TGAImage::RGB);
-	DrawByBresnham(20, 30, 50, 80, image, red);
-	DrawByBresnham(20, 30, 50, 20, image, red);
-	DrawByBresnham(50, 20, 50, 80, image, green);
+	DrawBySlope(30,2,.1, image, red);
+	DrawByDDA(30,60,70,80, image, red);
+	DrawByDDA(70,80,100,120, image, red);
+	DrawByDDA(100,120,30,60, image, red);
 	image.write_tga_file("withbrensham.tga");
-	system("cd E:");
-	system("cd E:/Program Files/Aseprite>Aseprite.exe");
-
 	return 0;
 }
